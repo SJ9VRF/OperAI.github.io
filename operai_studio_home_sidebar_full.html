@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OperAI Studio — Build, Launch, and Run with Agentic AI</title>
+  <meta name="description" content="OperAI Studio is an agentic AI platform to design, build, launch, and run products with autonomous AI agents.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            body: ['Inter', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            primary: {
+              50: '#f4f0ff',100: '#ede6ff',200: '#d9ccff',300: '#b7a1ff',
+              400: '#9b7cff',500: '#7b57ff',600: '#5e3bff',700: '#4b2fe6',800: '#3924b3',900: '#2a1a80'
+            },
+            accent: { 500: '#00f0ff' }
+          },
+          boxShadow: { glow: '0 0 0 3px rgba(123, 87, 255, 0.25), 0 0 30px rgba(0, 240, 255, 0.25)' },
+          backgroundImage: {
+            'hero': 'radial-gradient(1200px 600px at 10% -10%, rgba(91,33,182,0.35) 0%, rgba(91,33,182,0) 60%), radial-gradient(1200px 600px at 80% 10%, rgba(59,130,246,0.25) 0%, rgba(59,130,246,0) 50%)',
+            'dots': 'radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px)'
+          },
+          backgroundSize: {
+            'dots': '22px 22px'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; --sidebar-w: 280px; }
+    body { font-family: Inter, system-ui, sans-serif; }
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:.75rem; padding:.75rem 1.25rem; font-size:.875rem; font-weight:600; transition:all .2s ease; }
+    .btn-primary { background:#5e3bff; color:#fff; box-shadow:0 0 0 3px rgba(123,87,255,.25), 0 0 30px rgba(0,240,255,.25); }
+    .btn-primary:hover { background:#7b57ff; }
+    .btn-ghost { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.1); }
+    .btn-ghost:hover { background:rgba(255,255,255,.2); }
+    .badge { display:inline-flex; align-items:center; border-radius:999px; padding:.25rem .75rem; font-size:.75rem; font-weight:600; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.1); }
+    /* Sidebar mechanics */
+    .with-sidebar .content-wrap { margin-left: var(--sidebar-w); }
+    .sidebar { width: var(--sidebar-w); transform: translateX(-100%); transition: transform .25s ease; }
+    .sidebar.visible { transform: translateX(0); }
+    .content-wrap, .topbar-inner { transition: padding-left .25s ease, margin-left .25s ease; }
+    /* Mobile overlay */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+    /* Scrollspy */
+    .nav-link.active { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.22); }
+    .nav-link { border:1px solid transparent; }
+    @media (max-width: 1024px) { .with-sidebar .content-wrap { margin-left: 0; } }
+  </style>
+</head>
+
+<body class="bg-neutral-950 text-white selection:bg-primary-600/50">
+  <!-- background aura + dots -->
+  <div class="pointer-events-none fixed inset-0 bg-hero -z-10"></div>
+  <div class="pointer-events-none fixed inset-0 bg-dots bg-dots opacity-[.15] -z-10"></div>
+
+  <!-- Mobile overlay -->
+  <div id="overlay" class="overlay z-30"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-40">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-primary-900/40 via-primary-800/20 to-transparent blur-2xl"></div>
+    <div class="glass h-full p-4 flex flex-col">
+      <a href="#top" class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/5">
+        <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#g)"/>
+          <path d="M14 30c0-6 4-12 10-12s10 6 10 12" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M18 30c0-3.5 2.5-7 6-7s6 3.5 6 7" stroke="#00F0FF" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="24" cy="33" r="2" fill="white"/>
+          <defs>
+            <linearGradient id="g" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7B57FF"/><stop offset="1" stop-color="#00F0FF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="font-display font-bold tracking-tight">OperAI Studio</span>
+      </a>
+
+      <div class="mt-4">
+        <label class="sr-only" for="search">Search</label>
+        <div class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M11 19a8 8 0 1 1 5.3-14.05A8 8 0 0 1 11 19Zm10 2-5.2-5.2" stroke="white" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="search" placeholder="Search…" class="bg-transparent outline-none text-sm w-full placeholder-white/50"/>
+        </div>
+      </div>
+
+      <nav class="mt-4 space-y-1 text-sm font-medium">
+        <a href="#top" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>🏠</span><span>Home</span></a>
+        <a href="#why" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>✨</span><span>Why OperAI</span></a>
+        <a href="#features" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>🧩</span><span>Features</span></a>
+        <a href="#modules" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>🧪</span><span>Studio Modules</span></a>
+        <a href="#pricing" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>💳</span><span>Pricing</span></a>
+        <a href="#testimonials" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>💬</span><span>Testimonials</span></a>
+        <a href="#faq" class="nav-link flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10"><span>❓</span><span>FAQ</span></a>
+      </nav>
+
+      <div class="my-4 h-px bg-white/10"></div>
+
+      <div class="grid gap-2">
+        <a href="#demo" class="btn btn-primary w-full">Open Demo</a>
+        <a href="#" class="btn btn-ghost w-full">Create Workspace</a>
+      </div>
+
+      <div class="mt-auto pt-4 text-xs text-white/60">
+        <p>© <span id="year">2025</span> OperAI Studio</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header id="top" class="sticky top-0 z-30">
+    <div class="glass">
+      <div id="topbarInner" class="topbar-inner px-4">
+        <nav class="flex h-16 items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button id="toggleSidebar" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10" aria-expanded="true" aria-controls="sidebar">
+              <span class="sr-only">Toggle sidebar</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <a href="#" class="hidden sm:flex items-center gap-2">
+              <div class="h-6 w-6 rounded-md bg-gradient-to-br from-primary-600 to-accent-500"></div>
+              <span class="text-sm font-semibold">OperAI Studio</span>
+            </a>
+          </div>
+
+          <div class="hidden md:flex items-center gap-6">
+            <a href="#features" class="text-sm/6 text-white/80 hover:text-white">Features</a>
+            <a href="#modules" class="text-sm/6 text-white/80 hover:text-white">Modules</a>
+            <a href="#pricing" class="text-sm/6 text-white/80 hover:text-white">Pricing</a>
+            <a href="#faq" class="text-sm/6 text-white/80 hover:text-white">FAQ</a>
+          </div>
+
+          <div class="hidden md:flex items-center gap-3">
+            <a href="#demo" class="btn btn-ghost">Watch Demo</a>
+            <a href="#" class="btn btn-primary">Start Free</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main id="contentWrap" class="content-wrap">
+    <!-- HERO -->
+    <section class="relative overflow-hidden">
+      <div class="mx-auto max-w-7xl px-6 pt-12 pb-16 md:pb-24">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <div class="mb-5 flex items-center gap-3">
+              <span class="badge">Agentic AI Platform</span>
+              <span class="badge">For Builders & Teams</span>
+            </div>
+            <h1 class="font-display text-4xl md:text-5xl font-extrabold tracking-tight">
+              Build, launch & run products<br class="hidden md:block"/> with autonomous AI agents.
+            </h1>
+            <p class="mt-5 text-base md:text-lg text-white/80 max-w-xl">
+              OperAI Studio orchestrates multi-agent workflows for product ideation, market research, UX, copy, code, QA, growth, and investor-ready assets—end to end.
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="#" class="btn btn-primary">Start Free</a>
+              <a href="#demo" class="btn btn-ghost">See 2-min Demo</a>
+            </div>
+            <div class="mt-6 flex items-center gap-5 text-white/60 text-xs">
+              <div class="flex -space-x-2">
+                <span class="w-6 h-6 rounded-full bg-primary-600/80 border border-white/20"></span>
+                <span class="w-6 h-6 rounded-full bg-primary-400/80 border border-white/20"></span>
+                <span class="w-6 h-6 rounded-full bg-accent-500/80 border border-white/20"></span>
+              </div>
+              <span>Trusted by founders, PMs, and research teams</span>
+            </div>
+          </div>
+
+          <!-- Product mock card -->
+          <div class="relative">
+            <div class="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-primary-600/40 via-primary-400/20 to-accent-500/20 blur-2xl"></div>
+            <div class="relative glass rounded-3xl p-4 md:p-6">
+              <div class="rounded-2xl border border-white/10 bg-black/40 overflow-hidden">
+                <div class="flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-white/5">
+                  <span class="w-2 h-2 rounded-full bg-red-400/80"></span>
+                  <span class="w-2 h-2 rounded-full bg-yellow-400/80"></span>
+                  <span class="w-2 h-2 rounded-full bg-green-400/80"></span>
+                  <span class="text-xs text-white/60 ml-auto">operai-studio / workflow.graph</span>
+                </div>
+                <div class="p-4 md:p-6 grid gap-4">
+                  <div class="grid grid-cols-3 gap-3">
+                    <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                      <p class="text-xs text-white/60">Agent</p>
+                      <p class="text-sm font-semibold">Analyst</p>
+                      <p class="text-xs text-white/60 mt-1">Market & competition</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                      <p class="text-xs text-white/60">Agent</p>
+                      <p class="text-sm font-semibold">Builder</p>
+                      <p class="text-xs text-white/60 mt-1">Code & integration</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                      <p class="text-xs text-white/60">Agent</p>
+                      <p class="text-sm font-semibold">Storyteller</p>
+                      <p class="text-xs text-white/60 mt-1">Brand & pitch</p>
+                    </div>
+                  </div>
+                  <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                    <p class="text-xs text-white/60">Playbook</p>
+                    <p class="text-sm font-semibold">MVP → Beta → Launch</p>
+                    <p class="text-xs text-white/60 mt-1">Tunable lanes, human-in-the-loop, governance</p>
+                  </div>
+                  <div class="grid md:grid-cols-2 gap-3">
+                    <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                      <p class="text-xs text-white/60">Artifacts</p>
+                      <p class="text-sm font-semibold">PRD, wireframes, landing page</p>
+                    </div>
+                    <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+                      <p class="text-xs text-white/60">Growth</p>
+                      <p class="text-sm font-semibold">SEO briefs, email cadences, investor deck</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-white/50 mt-3 text-center">Visual: Multi-agent orchestration with governance & artifacts</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY OPERAI -->
+    <section id="why" class="py-16 md:py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="grid lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-5">
+            <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">Move from idea to launch — 10× faster.</h2>
+            <p class="mt-4 text-white/80">Replace scattered tools and meetings with a single coordinated studio of AI agents, all working toward your product and go-to-market goals.</p>
+            <div class="mt-6 space-y-3">
+              <div class="flex gap-3">
+                <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-600/40 border border-white/10">✔</span>
+                <p><span class="font-semibold">End-to-end playbooks</span> for MVP, Product-Market-Fit, and Growth.</p>
+              </div>
+              <div class="flex gap-3">
+                <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-600/40 border border-white/10">✔</span>
+                <p><span class="font-semibold">Human-in-the-loop</span> approvals with versioned artifacts.</p>
+              </div>
+              <div class="flex gap-3">
+                <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-600/40 border border-white/10">✔</span>
+                <p><span class="font-semibold">Governance & safety</span> for enterprise policies and audit logs.</p>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-7">
+            <div class="relative">
+              <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary-600/30 to-accent-500/20 blur-2xl"></div>
+              <div class="relative glass rounded-3xl p-6">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Autonomous Research</p>
+                    <p class="text-xs text-white/70 mt-1">Market sizing, competitor tracking, user interviews.</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Design & Content</p>
+                    <p class="text-xs text-white/70 mt-1">Wireframes, copy, brand kit, visuals & video briefs.</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Code & QA</p>
+                    <p class="text-xs text-white/70 mt-1">Repo scaffolds, APIs, tests, telemetry.</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Launch Ops</p>
+                    <p class="text-xs text-white/70 mt-1">SEO, community, email, press kit, investor memo.</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Analytics</p>
+                    <p class="text-xs text-white/70 mt-1">North-star metrics, dashboards, cohort health.</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p class="text-sm font-semibold">Compliance</p>
+                    <p class="text-xs text-white/70 mt-1">PII redaction, content policy, legal review hooks.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-white/50 mt-3">Everything orchestrated in one place with audit trails.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="py-16 md:py-24 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">Studio features that ship.</h2>
+          <p class="mt-3 text-white/80">From first draft to first paying user—without context switching.</p>
+        </div>
+
+        <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Cards -->
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">⚙</div>
+              <h3 class="font-semibold">Workflow Graph</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">Drag-and-drop multi-agent pipelines with inputs, artifacts, and review gates.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• Branching, retries, and SLAs</li>
+              <li>• Real-time tokens & cost view</li>
+              <li>• Versioned runs & rollbacks</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">🧠</div>
+              <h3 class="font-semibold">Agent Profiles</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">Specialized roles (Analyst, Builder, Storyteller, Growth) with tools & guardrails.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• Memory & retrieval</li>
+              <li>• Toolformer adapters</li>
+              <li>• Safety policies & red-teaming</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">📦</div>
+              <h3 class="font-semibold">Artifact Hub</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">PRDs, wireframes, code, decks, posts—linked, versioned, and exportable.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• Export HTML/PDF/ZIP</li>
+              <li>• Review diffs & approvals</li>
+              <li>• Integrations: GitHub, Notion, Drive</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">📈</div>
+              <h3 class="font-semibold">Launch & Growth</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">SEO briefs, email cadences, influencer briefs, and A/B assets generated in-studio.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• Audience & channel picks</li>
+              <li>• Post calendars</li>
+              <li>• CRM & ads adapters</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">🔒</div>
+              <h3 class="font-semibold">Governance</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">Policy templates, audit logs, PII redaction, content filters, and SSO.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• Role-based controls</li>
+              <li>• SOC2-ready checklists</li>
+              <li>• Org-wide guardrails</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-2xl p-6 border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-xl bg-primary-600/30 border border-white/10 flex items-center justify-center">🧩</div>
+              <h3 class="font-semibold">Integrations</h3>
+            </div>
+            <p class="mt-3 text-sm text-white/80">Bring your stack. Connect repos, data, and calendars to run where work happens.</p>
+            <ul class="mt-4 space-y-2 text-xs text-white/70">
+              <li>• GitHub, Slack, Notion, Drive</li>
+              <li>• Jira, Linear, Figma</li>
+              <li>• Webhooks & REST APIs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULES + DEMO -->
+    <section id="modules" class="py-16 md:py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">Studio Modules</h2>
+          <p class="mt-3 text-white/80">Pick a playbook or compose your own.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="group relative rounded-3xl border border-white/10 p-6 bg-white/[.03] overflow-hidden">
+          <div class="absolute -inset-1 opacity-0 group-hover:opacity-100 transition pointer-events-none">
+            <div class="w-full h-full blur-2xl bg-gradient-to-br from-primary-700/30 to-accent-500/20"></div>
+          </div>
+          <div class="relative">
+            <div class="badge">Idea → MVP</div>
+            <h3 class="mt-3 font-semibold text-lg">Founder Sprint</h3>
+            <p class="mt-2 text-sm text-white/80">Validate in a week: research, PRD, wireframes, and a working demo.</p>
+            <ul class="mt-4 text-xs text-white/70 space-y-2">
+              <li>• 15 user interviews (synthetic + real)</li>
+              <li>• Opportunity canvas & PRD v1</li>
+              <li>• Landing page + waitlist</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="group relative rounded-3xl border border-white/10 p-6 bg-white/[.03] overflow-hidden">
+          <div class="absolute -inset-1 opacity-0 group-hover:opacity-100 transition pointer-events-none">
+            <div class="w-full h-full blur-2xl bg-gradient-to-br from-primary-700/30 to-accent-500/20"></div>
+          </div>
+          <div class="relative">
+            <div class="badge">MVP → Beta</div>
+            <h3 class="mt-3 font-semibold text-lg">Product Lab</h3>
+            <p class="mt-2 text-sm text-white/80">Ship core features, run QA, set up analytics and crash reporting.</p>
+            <ul class="mt-4 text-xs text-white/70 space-y-2">
+              <li>• Tickets & sprints auto-generated</li>
+              <li>• Integration test harness</li>
+              <li>• Telemetry & dashboards</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="group relative rounded-3xl border border-white/10 p-6 bg-white/[.03] overflow-hidden">
+          <div class="absolute -inset-1 opacity-0 group-hover:opacity-100 transition pointer-events-none">
+            <div class="w-full h-full blur-2xl bg-gradient-to-br from-primary-700/30 to-accent-500/20"></div>
+          </div>
+          <div class="relative">
+            <div class="badge">Beta → Launch</div>
+            <h3 class="mt-3 font-semibold text-lg">Launchpad</h3>
+            <p class="mt-2 text-sm text-white/80">Go-to-market plan with content, PR, and community initiatives.</p>
+            <ul class="mt-4 text-xs text-white/70 space-y-2">
+              <li>• Press kit & announcement plan</li>
+              <li>• Email & social calendars</li>
+              <li>• Partner outreach flows</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo CTA -->
+      <div id="demo" class="mt-12 glass rounded-3xl p-8 border border-white/10 flex flex-col md:flex-row items-center gap-6">
+        <div class="flex-1">
+          <h3 class="font-display text-2xl font-bold">See the 2-minute demo</h3>
+          <p class="mt-2 text-white/80 text-sm">Watch agents collaborate live—then duplicate the template into your workspace.</p>
+          <div class="mt-4 flex gap-3">
+            <a href="#" class="btn btn-primary">Open Demo</a>
+            <a href="#" class="btn btn-ghost">Get Template</a>
+          </div>
+        </div>
+        <div class="w-full md:w-[420px]">
+          <div class="aspect-video rounded-2xl overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+            <span class="text-white/60 text-sm">Video placeholder — drop your loom/embed</span>
+          </div>
+          <p class="mt-2 text-xs text-white/50">Embed Loom/YouTube here.</p>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="py-16 md:py-24 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">Simple pricing</h2>
+          <p class="mt-3 text-white/80">Start free. Scale with your team.</p>
+        </div>
+
+        <div class="mt-12 grid gap-6 lg:grid-cols-3">
+          <div class="glass rounded-3xl p-6 border border-white/10">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-lg">Starter</h3>
+              <span class="badge">Best for solo</span>
+            </div>
+            <p class="mt-2 text-3xl font-extrabold">$0</p>
+            <p class="text-xs text-white/70">No credit card</p>
+            <ul class="mt-4 space-y-2 text-sm text-white/80">
+              <li>• 1 workspace, 3 agents</li>
+              <li>• 5 workflows, 10 runs/day</li>
+              <li>• Basic exports</li>
+            </ul>
+            <a href="#" class="btn btn-primary w-full mt-6">Get Started</a>
+          </div>
+
+          <div class="glass rounded-3xl p-6 border border-white/10 ring-2 ring-primary-600/60">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-lg">Team</h3>
+              <span class="badge">Popular</span>
+            </div>
+            <p class="mt-2 text-3xl font-extrabold">$39</p>
+            <p class="text-xs text-white/70">per user / month</p>
+            <ul class="mt-4 space-y-2 text-sm text-white/80">
+              <li>• Unlimited agents & workflows</li>
+              <li>• Artifact Hub + exports</li>
+              <li>• Slack/Notion/GitHub integrations</li>
+            </ul>
+            <a href="#" class="btn btn-primary w-full mt-6">Start Team Trial</a>
+          </div>
+
+          <div class="glass rounded-3xl p-6 border border-white/10">
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-lg">Enterprise</h3>
+              <span class="badge">SOC2-ready</span>
+            </div>
+            <p class="mt-2 text-3xl font-extrabold">Custom</p>
+            <p class="text-xs text-white/70">Annual billing</p>
+            <ul class="mt-4 space-y-2 text-sm text-white/80">
+              <li>• SSO/SAML, RBAC, audit logs</li>
+              <li>• Private cloud / on-prem</li>
+              <li>• Dedicated support & SLAs</li>
+            </ul>
+            <a href="#" class="btn btn-primary w-full mt-6">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" class="py-16 md:py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">What builders say</h2>
+          <p class="mt-3 text-white/80">Real teams shipping faster with OperAI Studio.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          <figure class="glass rounded-3xl p-6 border border-white/10">
+            <blockquote class="text-sm text-white/80">“We replaced 7 tools. The Studio gave us weekly releases and an investor deck in days.”</blockquote>
+            <figcaption class="mt-4 text-xs text-white/60">PM @ fintech startup</figcaption>
+          </figure>
+          <figure class="glass rounded-3xl p-6 border border-white/10">
+            <blockquote class="text-sm text-white/80">“Agents + guardrails meant we could iterate boldly without risking compliance.”</blockquote>
+            <figcaption class="mt-4 text-xs text-white/60">Head of Growth @ SaaS</figcaption>
+          </figure>
+          <figure class="glass rounded-3xl p-6 border border-white/10">
+            <blockquote class="text-sm text-white/80">“Idea → demo in a week. The playbooks are gold.”</blockquote>
+            <figcaption class="mt-4 text-xs text-white/60">Founder @ consumer app</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-16 md:py-24 border-t border-white/10">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="text-center max-w-3xl mx-auto">
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">FAQ</h2>
+      </div>
+      <div class="mt-8 grid gap-4">
+        <details class="glass rounded-2xl p-5 border border-white/10">
+          <summary class="font-semibold cursor-pointer">How is OperAI different from a regular chatbot?</summary>
+          <p class="mt-2 text-sm text-white/80">Studio agents are role-specialized, tool-using, and orchestrated via a workflow graph with review gates and artifact outputs.</p>
+        </details>
+        <details class="glass rounded-2xl p-5 border border-white/10">
+          <summary class="font-semibold cursor-pointer">Can I bring my own models and data?</summary>
+          <p class="mt-2 text-sm text-white/80">Yes. Connect OpenAI/Anthropic, open-source models, and your own RAG/BQ/S3 sources via adapters.</p>
+        </details>
+        <details class="glass rounded-2xl p-5 border border-white/10">
+          <summary class="font-semibold cursor-pointer">Is there a free plan?</summary>
+          <p class="mt-2 text-sm text-white/80">The Starter plan is free forever for hobby workspaces with daily run limits.</p>
+        </details>
+      </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 md:py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="glass rounded-3xl border border-white/10 p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
+          <div class="flex-1">
+            <h3 class="font-display text-2xl md:text-3xl font-bold">Ready to build with agents?</h3>
+            <p class="mt-2 text-white/80 text-sm">Spin up a workspace and ship your next release with OperAI Studio.</p>
+          </div>
+          <div class="flex gap-3">
+            <a href="#" class="btn btn-primary">Create Workspace</a>
+            <a href="#" class="btn btn-ghost">Book a Demo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="mx-auto max-w-7xl px-6 py-10">
+      <div class="grid md:grid-cols-4 gap-8 text-sm">
+        <div>
+          <div class="flex items-center gap-2">
+            <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-primary-600 to-accent-500"></div>
+            <span class="font-semibold">OperAI Studio</span>
+          </div>
+          <p class="mt-3 text-white/60 text-xs max-w-xs">Agentic AI to design, build, and launch with speed and safety.</p>
+        </div>
+        <div>
+          <p class="font-semibold">Product</p>
+          <ul class="mt-3 space-y-2 text-white/70">
+            <li><a href="#features" class="hover:text-white">Features</a></li>
+            <li><a href="#modules" class="hover:text-white">Modules</a></li>
+            <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+            <li><a href="#demo" class="hover:text-white">Demo</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold">Company</p>
+          <ul class="mt-3 space-y-2 text-white/70">
+            <li><a href="#" class="hover:text-white">About</a></li>
+            <li><a href="#" class="hover:text-white">Blog</a></li>
+            <li><a href="#" class="hover:text-white">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold">Legal</p>
+          <ul class="mt-3 space-y-2 text-white/70">
+            <li><a href="#" class="hover:text-white">Privacy</a></li>
+            <li><a href="#" class="hover:text-white">Terms</a></li>
+            <li><a href="#" class="hover:text-white">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/50">
+        <p>© <span id="yearFooter"></span> OperAI Studio. All rights reserved.</p>
+        <div class="flex items-center gap-3">
+          <a href="#" class="hover:text-white">X</a>
+          <a href="#" class="hover:text-white">LinkedIn</a>
+          <a href="#" class="hover:text-white">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Helpers
+    const qs  = s => document.querySelector(s);
+    const qsa = s => Array.from(document.querySelectorAll(s));
+
+    // Year
+    qs('#yearFooter').textContent = new Date().getFullYear();
+    qsa('#year').forEach(el => el.textContent = new Date().getFullYear());
+
+    // Elements
+    const body    = document.body;
+    const sidebar = qs('#sidebar');
+    const overlay = qs('#overlay');
+    const toggle  = qs('#toggleSidebar');
+    const topbar  = qs('#topbarInner');
+    const content = qs('#contentWrap');
+
+    // Layout paddings synced with sidebar state (desktop)
+    function applyPadding() {
+      const desktop = window.innerWidth >= 1024;
+      const has     = body.classList.contains('with-sidebar');
+      topbar.style.paddingLeft = (desktop && has) ? 'calc(var(--sidebar-w) + 1rem)' : '';
+      content.classList.toggle('with-sidebar', desktop && has);
+    }
+
+    // Initial state
+    function init() {
+      const desktop = window.innerWidth >= 1024;
+      if (desktop) {
+        body.classList.add('with-sidebar');
+        sidebar.classList.add('visible');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        body.classList.remove('with-sidebar');
+        sidebar.classList.remove('visible');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+      overlay.classList.remove('show');
+      applyPadding();
+    }
+    init();
+    window.addEventListener('resize', init);
+
+    // Toggle
+    toggle.addEventListener('click', () => {
+      const desktop = window.innerWidth >= 1024;
+      const isOpen  = sidebar.classList.contains('visible');
+
+      if (desktop) {
+        if (isOpen) {
+          sidebar.classList.remove('visible');
+          body.classList.remove('with-sidebar');
+          toggle.setAttribute('aria-expanded', 'false');
+        } else {
+          sidebar.classList.add('visible');
+          body.classList.add('with-sidebar');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+        overlay.classList.remove('show');
+        applyPadding();
+      } else {
+        if (isOpen) {
+          sidebar.classList.remove('visible');
+          overlay.classList.remove('show');
+          toggle.setAttribute('aria-expanded', 'false');
+        } else {
+          sidebar.classList.add('visible');
+          overlay.classList.add('show');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      }
+    });
+
+    // Click outside (mobile)
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('visible');
+      overlay.classList.remove('show');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+
+    // Close on nav click (mobile)
+    qsa('aside nav a').forEach(a => a.addEventListener('click', () => {
+      if (window.innerWidth < 1024) {
+        sidebar.classList.remove('visible');
+        overlay.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    }));
+
+    // Basic scrollspy
+    const sections = ['#top', '#why', '#features', '#modules', '#pricing', '#testimonials', '#faq'].map(id => qs(id));
+    const links = qsa('.nav-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = '#' + entry.target.id;
+          links.forEach(l => {
+            l.classList.toggle('active', l.getAttribute('href') === id);
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0.01 });
+    sections.filter(Boolean).forEach(sec => observer.observe(sec));
+  </script>
+</body>
+</html>
